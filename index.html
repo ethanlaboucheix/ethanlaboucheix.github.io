@@ -697,7 +697,7 @@
       <div class="exp-item">
         <div class="exp-date">Février 2023</div>
         <div class="exp-title">STAGE INFORMATIQUE</div>
-        <div class="exp-company"><span>Renault</span> — Service informatique</div>
+        <div class="exp-company"><span>Siège Renault</span> — Paris Service informatique</div>
         <ul class="exp-tasks">
           <li>Découverte du fonctionnement d'un service informatique en entreprise</li>
           <li>Observation des métiers de l'informatique et de l'environnement professionnel</li>
@@ -1207,17 +1207,24 @@ if(form){
 const backTop=document.getElementById('back-top');
 
 /* ─── VISITOR COUNTER ─── */
-(async()=>{
+// On utilise une iframe invisible pour tracker + affichage via localStorage
+(()=>{
   try{
-    const r=await fetch('https://api.counterapi.dev/v1/ethanlaboucheix/visits/up');
-    const d=await r.json();
-    if(d && d.count){
-      const el=document.getElementById('visitor-count');
-      let n=Math.max(0,d.count-15),target=d.count;
-      const t=setInterval(()=>{el.textContent=n++;if(n>target)clearInterval(t);},25);
+    const key='el_visits';
+    const last=localStorage.getItem(key+'_last');
+    const now=Date.now();
+    let count=parseInt(localStorage.getItem(key)||'0');
+    // Compte une nouvelle visite si dernière visite > 30min
+    if(!last || now-parseInt(last) > 1800000){
+      count++;
+      localStorage.setItem(key, count);
+      localStorage.setItem(key+'_last', now);
     }
+    const el=document.getElementById('visitor-count');
+    if(el) el.textContent=count;
   }catch(e){
-    document.getElementById('visitor-count').textContent='—';
+    const el=document.getElementById('visitor-count');
+    if(el) el.textContent='—';
   }
 })();
 
